@@ -1,66 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IHG Nudge Calendar Project</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IHG Nudge Calendar Toolkit</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 800px;
-      margin: 0 auto;
+      background: #f8f8f8;
       padding: 2rem;
-      background: #f9f9f9;
+      max-width: 800px;
+      margin: auto;
     }
-    h1, h2 {
-      color: #0b3d91;
+    h1 {
+      color: #2a2a2a;
     }
-    p {
-      line-height: 1.6;
+    section {
+      margin-bottom: 2rem;
     }
     code {
-      background: #eee;
+      background: #eaeaea;
       padding: 0.2rem 0.4rem;
       border-radius: 4px;
+      font-size: 0.95em;
     }
-    pre {
-      background: #eee;
-      padding: 1rem;
-      overflow-x: auto;
+    .file-list li {
+      margin: 0.3rem 0;
+    }
+    .download {
+      background: #0067b8;
+      color: white;
+      padding: 0.7rem 1rem;
+      border: none;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <h1>IHG Nudge Calendar Project</h1>
+  <h1>IHG Nudge Calendar Toolkit</h1>
+  <p>This internal tool helps generate 365-day training calendars using pre-written nudges and exports them to an iCalendar format.</p>
 
-  <p>This project creates a 365-day training nudge calendar, turning written prompts into structured calendar events that can be imported into Google, Outlook, or Apple Calendars.</p>
+  <section>
+    <h2>📁 Files</h2>
+    <ul class="file-list">
+      <li><code>extract_nudges.py</code> – Converts .txt documents into structured Excel files</li>
+      <li><code>generate_schedule.py</code> – Generates 365-day calendar with rotating categories</li>
+      <li><code>generate_ics.py</code> – Exports final .xlsx calendar to .ics format</li>
+      <li><code>requirements.txt</code> – Lists required dependencies</li>
+    </ul>
+  </section>
 
-  <h2>📁 Tools Included</h2>
-  <ul>
-    <li><strong>generate_schedule.py</strong>: Builds an Excel schedule from scratch</li>
-    <li><strong>generate_ics.py</strong>: Converts the schedule to an .ics calendar file</li>
-    <li><strong>README.md</strong>: Project instructions and documentation</li>
-  </ul>
+  <section>
+    <h2>📌 Usage</h2>
+    <p>Run these in your terminal after installing dependencies:</p>
+    <pre><code>pip install -r requirements.txt
+python extract_nudges.py
+python generate_schedule.py
+python generate_ics.py</code></pre>
+  </section>
 
-  <h2>🛠️ Requirements</h2>
-  <pre><code>pip install pandas ics openpyxl</code></pre>
-
-  <h2>▶️ Usage</h2>
-  <h3>1. Generate the Schedule</h3>
-  <pre><code>python generate_schedule.py --output calendar_schedule.xlsx</code></pre>
-
-  <h3>2. Generate the iCalendar File</h3>
-  <pre><code>python generate_ics.py --input calendar_schedule.xlsx --output IHG_Nudge_Calendar.ics</code></pre>
-
-  <h2>🧼 Spreadsheet Format</h2>
-  <ul>
-    <li><code>Date</code> (YYYY-MM-DD)</li>
-    <li><code>Day</code> (Weekday)</li>
-    <li><code>Category</code></li>
-    <li><code>Subcategory</code> (only for Dare to Connect)</li>
-    <li><code>Nudge ID</code> (optional)</li>
-  </ul>
-
-  <p>Made with ❤️ by Danielle Bronson for the IHG Learning & Development Team</p>
+  <section>
+    <h2>🔗 Download Final Calendar</h2>
+    <p>
+      <a href="IHG_Nudge_Calendar.ics" class="download">Download IHG_Nudge_Calendar.ics</a>
+    </p>
+  </section>
 </body>
 </html>

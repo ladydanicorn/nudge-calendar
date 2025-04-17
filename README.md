@@ -1,76 +1,90 @@
 # IHG Nudge Calendar Tools
 
-This project contains tools to create and export a 365-day training nudge calendar as an `.ics` file for Google Calendar, Outlook, or Apple Calendar. 
+This project contains tools to create and export a 365-day training nudge calendar as an `.ics` file for Google Calendar, Outlook, or Apple Calendar. It is designed to support hotel leaders with prewritten, daily training reminders.
 
 ---
 
 ## 📁 Project Files
 
-- `generate_schedule.py` — builds a 365-day schedule and exports it to Excel
-- `generate_ics.py` — converts the schedule into a downloadable `.ics` calendar file
-- `calendar_schedule.xlsx` — input/output file for nudges
-- `IHG_Nudge_Calendar.ics` — final output for calendar distribution
-- `README.md` — this documentation
+- `extract_nudges.py` — converts raw `.txt` documents into structured Excel files with Nudge IDs and Text
+- `generate_schedule.py` — builds a 365-day schedule starting May 1 with categories/subcategories
+- `generate_ics.py` — converts the final Excel calendar into a downloadable `.ics` calendar file
+- `IHG_Calendar.xlsx` — output of schedule file with mapped nudges (final calendar input)
+- `DTC_Nudges.xlsx`, `L_Nudges.xlsx`, etc. — extracted nudge text files
+- `IHG_Nudge_Calendar.ics` — final output calendar
+- `project_landing_page.html` — standalone interface and download portal (optional)
+- `requirements.txt` — dependency list
 
 ---
 
 ## 🔧 Requirements
 
-Install Python packages:
+Install dependencies:
 
 ```bash
-pip install pandas ics openpyxl
+pip install -r requirements.txt
 ```
 
 ---
 
 ## ▶️ Usage
 
-### 1. Generate the Schedule
+### 1. Extract Nudge Text
 
 ```bash
-python generate_schedule.py --output calendar_schedule.xlsx
+python extract_nudges.py
+```
+
+This will read all the raw `.txt` files in the same folder and output one spreadsheet per category:
+- `L_Nudges.xlsx` for Loyalty
+- `WOC_Nudges.xlsx` for Way of Clean
+- `PH_Nudges.xlsx` for Problem Handling
+- `DTC_Nudges.xlsx` for Dare to Connect
+
+---
+
+### 2. Generate the Schedule
+
+```bash
+python generate_schedule.py
 ```
 
 Optional:
 ```bash
 --start-date YYYY-MM-DD   # Defaults to 2025-05-01
+--output IHG_Calendar.xlsx
 ```
 
-This will create a file with:
-- Date
-- Day of week
-- Category
-- Subcategory (rotated Dare to Connect themes)
-- Empty columns for Nudge ID and Text (to be filled in later)
+This creates a calendar structure assigning categories to each day, including rotating Dare to Connect subcategories. You can manually or programmatically assign nudge IDs and texts based on the extracted spreadsheets.
 
 ---
 
-### 2. Generate the iCalendar File
+### 3. Generate the iCalendar File
 
 ```bash
-python generate_ics.py --input calendar_schedule.xlsx --output IHG_Nudge_Calendar.ics
+python generate_ics.py
 ```
 
 Optional:
 ```bash
---start-date YYYY-MM-DD
+--input IHG_Calendar.xlsx
+--output IHG_Nudge_Calendar.ics
 ```
 
-This script reads from the Excel sheet and converts each row into an `.ics` event scheduled at 9:00 AM (floating local time).
+This script reads the final Excel file and converts each row into an `.ics` calendar event scheduled for 9:00 AM local time.
 
 ---
 
-## 🧼 Spreadsheet Column Requirements
+## 🧼 Excel Column Requirements
 
-Make sure the Excel file includes:
+The final spreadsheet must include:
 
 - `Date` (datetime)
-- `Day` (weekday name, optional)
-- `Category` (e.g. Way of Clean, Dare to Connect)
-- `Subcategory` (only needed for Dare to Connect)
-- `Nudge ID` (optional for naming the event)
-- `Text` (nudge content)
+- `Day` (weekday, optional)
+- `Category` (e.g. Way of Clean, Loyalty)
+- `Subcategory` (only used for Dare to Connect)
+- `Nudge ID` (e.g. DTC-045, L-006)
+- `Text` (actual nudge content)
 
 ---
 

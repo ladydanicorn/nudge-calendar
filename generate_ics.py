@@ -1,42 +1,31 @@
+import pandas as pd
 from ics import Calendar, Event
 from datetime import datetime, timedelta
-import pandas as pd
+import argparse
 
-# Load populated nudge spreadsheet (replace with actual path if needed)
-df = pd.read_excel("IHG_Calendar.xlsx") # Adjust path as necessary
+def generate_ics(input_excel, output_ics):
+    df = pd.read_excel(input_excel)
+    cal = Calendar()
 
-# Create a new calendar
-cal = Calendar()
+    for _, row in df.iterrows():
+        if pd.isna(row['Date']) or pd.isna(row['Text']):
+            continue
 
-# Loop through the DataFrame and create events
-for _, row in df.iterrows():
-    # Skip rows without valid data (just in case)
-    if pd.isna(row['Nudge ID']) or pd.isna(row['Date']):
-        continue
+        event = Event()
+        event.name = f"Nudge: {row['Nudge ID']}"
+        event.begin = datetime.combine(pd.to_datetime(row['Date']), datetime.min.time()) + timedelta(hours=9)
+        event.duration = timedelta(minutes=15)
+        event.description = row['Text']
+        cal.events.add(event)
 
-    # Create a new event
-    e = Event()
+    with open(output_ics, "w") as f:
+        f.writelines(cal)
+    print(f".ics calendar exported to {output_ics}")
 
-    # Set a clear event title
-    e.name = f"Nudge: {row['Nudge ID']}"
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", default="IHG_Calendar.xlsx", help="Excel file with calendar entries")
+    parser.add_argument("--output", default="IHG_Nudge_Calendar.ics", help="Output .ics file")
+    args = parser.parse_args()
 
-    # Set event start time (9:00 AM local time, no timezone specified)
-    event_start = datetime.combine(row['Date'], datetime.min.time()) + timedelta(hours=9)
-    e.begin = event_start
-
-    # Set a placeholder duration (can be adjusted)
-    e.duration = timedelta(minutes=15)
-
-    # Build the event description
-    desc = f"Category: {row['Category']}\n"
-    if row['Category'] == "Dare to Connect":
-        desc += f"Subcategory: {row['Subcategory']}\n"
-    desc += f"\nNudge Content:\n{row['Text']}"
-    e.description = desc
-
-    # Add event to calendar
-    cal.events.add(e)
-
-# Export the calendar to an .ics file
-with open("IHG_Nudge_Calendar.ics", "w") as f:
-    f.writelines(cal)
+    generate_ics(args.input, args.output)

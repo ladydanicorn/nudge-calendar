@@ -1,62 +1,60 @@
-import argparse
-import logging
-from datetime import datetime, timedelta
 import pandas as pd
+from datetime import datetime, timedelta
+import random
+import argparse
 
-# Setup logging
-logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
-
-# CLI argument parser
-parser = argparse.ArgumentParser(description="Generate a 365-day nudge schedule for iCalendar conversion.")
-parser.add_argument('--output', required=True, help='Output Excel file name')
-parser.add_argument('--start-date', required=False, default='2025-05-01', help='Start date for the calendar (YYYY-MM-DD)')
-args = parser.parse_args()
-
-# Start date and range
-start_date = datetime.strptime(args.start_date, '%Y-%m-%d')
-dates = [start_date + timedelta(days=i) for i in range(365)]
-
-# Weekday assignments
-weekday_to_category = {
-    "Monday": "Problem Handling",
-    "Thursday": "Way of Clean",
-    "Saturday": "Loyalty"
-}
-
-# Dare to Connect rotation subcategories
-dtc_subcategories = [
+DTC_SUBCATEGORIES = [
     "Dare to Make the First Move",
     "Adapt to the Moment",
     "Relate to Guest Needs",
     "Enable Quality Downtime"
 ]
 
-# Setup rotation tracker
-dtc_index = 0
-schedule = []
+def generate_schedule(start_date: str, output_path: str):
+    date = datetime.strptime(start_date, "%Y-%m-%d")
+    data = []
 
-# Generate daily entries
-for date in dates:
-    day_name = date.strftime("%A")
-    if day_name in weekday_to_category:
-        category = weekday_to_category[day_name]
-        subcategory = "N/A"
-    else:
-        category = "Dare to Connect"
-        subcategory = dtc_subcategories[dtc_index]
-        dtc_index = (dtc_index + 1) % len(dtc_subcategories)
+    dtc_rotation = DTC_SUBCATEGORIES.copy()
+    random.shuffle(dtc_rotation)
+    dtc_index = 0
 
-    schedule.append({
-        "Date": date.date(),
-        "Day": day_name,
-        "Category": category,
-        "Subcategory": subcategory,
-        "Nudge ID": "",
-        "Text": ""
-    })
+    category_days = {
+        0: "Problem Handling",  # Monday
+        3: "Way of Clean",      # Thursday
+        5: "Loyalty"            # Saturday
+    }
 
-# Create DataFrame and export
-schedule_df = pd.DataFrame(schedule)
-schedule_df.to_excel(args.output, index=False)
-logging.info(f"Saved schedule to {args.output}")
+    # Create a schedule for 365 days
+    for i in range(365):
+        day_of_week = date.weekday()
+        category = category_days.get(day_of_week, "Dare to Connect")
+        subcategory = ""
 
+        if category == "Dare to Connect":
+            subcategory = dtc_rotation[dtc_index % 4]
+            dtc_index += 1
+            if dtc_index % 4 == 0:
+                random.shuffle(dtc_rotation)
+
+        data.append({
+            "Date": date.date(),
+            "Day": date.strftime("%A"),
+            "Category": category,
+            "Subcategory": subcategory,
+            "Nudge ID": "",
+            "Text": ""
+        })
+
+        date += timedelta(days=1)
+
+    df = pd.DataFrame(data)
+    df.to_excel(output_path, index=False)
+    print(f"Generated calendar: {output_path}")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--start-date", default="2025-05-01", help="Start date for the schedule")
+    parser.add_argument("--output", default="IHG_Calendar.xlsx", help="Output Excel file")
+    args = parser.parse_args()
+
+    generate_schedule(args.start_date, args.output)
